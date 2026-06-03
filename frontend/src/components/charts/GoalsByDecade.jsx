@@ -48,12 +48,7 @@ export default function GoalsByDecade({ selectedDecade, onDecadeClick }) {
         </p>
       </div>
       <ResponsiveContainer width="100%" height={280}>
-        <BarChart
-          data={rows}
-          margin={{ top: 8, right: 16, left: 0, bottom: 0 }}
-          onClick={(e) => e?.activePayload && onDecadeClick(e.activePayload[0].payload.decade)}
-          style={{ cursor: "pointer" }}
-        >
+        <BarChart data={rows} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
           <XAxis dataKey="label" tick={{ fill: "#94a3b8", fontSize: 12 }} axisLine={false} tickLine={false} />
           <YAxis
@@ -62,7 +57,12 @@ export default function GoalsByDecade({ selectedDecade, onDecadeClick }) {
             domain={[0, "auto"]}
           />
           <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(255,255,255,0.04)" }} />
-          <Bar dataKey="avg_per_match" radius={[4, 4, 0, 0]}>
+          <Bar
+            dataKey="avg_per_match"
+            radius={[4, 4, 0, 0]}
+            onClick={(data) => onDecadeClick(data.decade)}
+            style={{ cursor: "pointer" }}
+          >
             {rows.map((r) => (
               <Cell key={r.decade} fill={barColor(r)} />
             ))}
