@@ -11,6 +11,7 @@ Documentação técnica de cada fase do projeto. Atualizada ao final de cada eta
 | 4 — Frontend React Core | [fase4_frontend.md](fase4_frontend.md) | Concluída |
 | 5 — Gráficos & Charts | [fase5_graficos.md](fase5_graficos.md) | Concluída |
 | 6 — Polish & FIFA Bracket | [fase6_polish.md](fase6_polish.md) | Concluída |
+| 7 — Deploy (GH Pages + Render) | [fase7_deploy.md](fase7_deploy.md) | Concluída |
 
 ## Métricas de Progresso
 
