@@ -10,7 +10,7 @@ Documentação técnica de cada fase do projeto. Atualizada ao final de cada eta
 | 3 — API FastAPI | [fase3_api.md](fase3_api.md) | Concluída |
 | 4 — Frontend React Core | [fase4_frontend.md](fase4_frontend.md) | Concluída |
 | 5 — Gráficos & Charts | [fase5_graficos.md](fase5_graficos.md) | Concluída |
-| 6 — Polish | *em breve* | Pendente |
+| 6 — Polish & FIFA Bracket | [fase6_polish.md](fase6_polish.md) | Concluída |
 
 ## Métricas de Progresso
 
