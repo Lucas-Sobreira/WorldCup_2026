@@ -46,14 +46,22 @@ def confederation_avg_stats(
         vals = [all_team_stats[t][key] for t in members]
         return sum(vals) / len(vals) if vals else 0.0
 
+    def _safe_avg(key: str) -> float:
+        vals = [all_team_stats[t][key] for t in members if key in all_team_stats[t]]
+        return sum(vals) / len(vals) if vals else 0.0
+
     return {
-        "win_rate": _avg("win_rate"),
-        "win_rate_recent": _avg("win_rate_recent"),
-        "draw_rate": _avg("draw_rate"),
-        "goals_scored": _avg("goals_scored"),
-        "goals_conceded": _avg("goals_conceded"),
-        "appearances": _avg("appearances"),
-        "knockout_rate": _avg("knockout_rate"),
-        "conf_win_rate": _avg("win_rate"),
+        "win_rate": _safe_avg("win_rate"),
+        "win_rate_recent": _safe_avg("win_rate_recent"),
+        "draw_rate": _safe_avg("draw_rate"),
+        "goals_scored": _safe_avg("goals_scored"),
+        "goals_conceded": _safe_avg("goals_conceded"),
+        "goals_scored_recent": _safe_avg("goals_scored_recent"),
+        "goals_conceded_recent": _safe_avg("goals_conceded_recent"),
+        "appearances": _safe_avg("appearances"),
+        "knockout_rate": _safe_avg("knockout_rate"),
+        "wc_titles": _safe_avg("wc_titles"),
+        "finals_reached": _safe_avg("finals_reached"),
+        "conf_win_rate": _safe_avg("win_rate"),
         "is_cold_start": True,
     }

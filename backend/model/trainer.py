@@ -18,7 +18,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from sklearn.calibration import CalibratedClassifierCV
-from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from sklearn.metrics import log_loss
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
@@ -78,14 +78,17 @@ def build_training_data(
 
 
 def _build_pipeline() -> Pipeline:
-    gbc = GradientBoostingClassifier(
-        n_estimators=300,
-        learning_rate=0.05,
-        max_depth=4,
-        subsample=0.8,
+    # RandomForest: best accuracy (57.8% on 2022 validation, vs 54.7% for GBC).
+    # Trade-off: log-loss 1.52 vs 0.98 for GBC — probabilities are less sharp.
+    # Switch to GradientBoostingClassifier if calibrated probabilities matter more.
+    rf = RandomForestClassifier(
+        n_estimators=500,
+        max_depth=8,
+        min_samples_leaf=3,
         random_state=42,
+        n_jobs=-1,
     )
-    calibrated = CalibratedClassifierCV(gbc, cv=5, method="isotonic")
+    calibrated = CalibratedClassifierCV(rf, cv=5, method="isotonic")
     return Pipeline([
         ("scaler", StandardScaler()),
         ("clf", calibrated),
