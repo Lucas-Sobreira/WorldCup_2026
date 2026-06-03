@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, ReferenceLine,
+  ResponsiveContainer, ReferenceLine, ReferenceArea,
 } from "recharts";
 import { useTeamHistory } from "../../hooks";
 import TeamFlag from "../shared/TeamFlag";
@@ -11,8 +11,6 @@ const POPULAR_TEAMS = [
   "Brazil", "Germany", "France", "Argentina", "Spain",
   "England", "Italy", "Netherlands", "Uruguay", "Portugal",
 ];
-
-const RESULT_VALUE = { W: 3, D: 1, L: 0 };
 
 function buildYearlyData(history) {
   const byYear = {};
@@ -35,6 +33,16 @@ function buildYearlyData(history) {
     }));
 }
 
+function decadeStats(yearlyData, decade) {
+  const slice = yearlyData.filter((y) => y.year >= decade && y.year < decade + 10);
+  if (!slice.length) return null;
+  const wins = slice.reduce((s, y) => s + y.wins, 0);
+  const played = slice.reduce((s, y) => s + y.played, 0);
+  const gf = slice.reduce((s, y) => s + y.gf, 0);
+  const ga = slice.reduce((s, y) => s + y.ga, 0);
+  return { editions: slice.length, wins, played, gf, ga };
+}
+
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
   const d = payload[0]?.payload;
@@ -48,18 +56,32 @@ const CustomTooltip = ({ active, payload, label }) => {
   );
 };
 
-function TeamStats({ data }) {
-  return (
-    <div className="team-stats-row">
-      {[
+function TeamStats({ data, yearlyData, selectedDecade }) {
+  // When a decade is active, show decade-scoped stats instead of career totals
+  const ds = selectedDecade ? decadeStats(yearlyData, selectedDecade) : null;
+
+  const stats = ds
+    ? [
+        { label: "Editions", value: ds.editions },
+        { label: "Matches", value: ds.played },
+        { label: "Win rate", value: `${ds.played ? Math.round((ds.wins / ds.played) * 100) : 0}%` },
+        { label: "Goals for", value: ds.gf },
+        { label: "Goals ag.", value: ds.ga },
+        { label: "GD", value: ds.gf - ds.ga >= 0 ? `+${ds.gf - ds.ga}` : ds.gf - ds.ga },
+      ]
+    : [
         { label: "Appearances", value: data.appearances },
         { label: "Matches", value: data.total_matches },
         { label: "Win rate", value: `${Math.round(data.win_rate * 100)}%` },
         { label: "Goals/game", value: data.goals_per_game },
         { label: "WC Titles", value: data.wc_titles },
         { label: "Finals", value: data.finals_reached },
-      ].map(({ label, value }) => (
-        <div key={label} className="team-stat">
+      ];
+
+  return (
+    <div className="team-stats-row">
+      {stats.map(({ label, value }) => (
+        <div key={label} className={`team-stat ${ds ? "team-stat--decade" : ""}`}>
           <span className="team-stat__val">{value}</span>
           <span className="team-stat__lbl">{label}</span>
         </div>
@@ -68,7 +90,7 @@ function TeamStats({ data }) {
   );
 }
 
-export default function TeamHistoryLine() {
+export default function TeamHistoryLine({ selectedDecade }) {
   const [selected, setSelected] = useState("Brazil");
   const [input, setInput] = useState("");
   const { data, isLoading, error } = useTeamHistory(selected);
@@ -78,12 +100,28 @@ export default function TeamHistoryLine() {
     if (input.trim()) { setSelected(input.trim()); setInput(""); }
   };
 
-  const yearlyData = data ? buildYearlyData(data.history) : [];
+  const allYearlyData = data ? buildYearlyData(data.history) : [];
+
+  // Filter line data to selected decade; keep full range for ReferenceArea context
+  const visibleData = selectedDecade
+    ? allYearlyData.filter((y) => y.year >= selectedDecade && y.year < selectedDecade + 10)
+    : allYearlyData;
+
+  const hasDecadeData = selectedDecade
+    ? visibleData.length > 0
+    : true;
 
   return (
     <div className="chart-card">
       <div className="chart-card__header">
-        <h3 className="chart-card__title">Team World Cup History</h3>
+        <div className="chart-card__title-row">
+          <h3 className="chart-card__title">Team World Cup History</h3>
+          {selectedDecade !== null && (
+            <span className="filter-badge filter-badge--passive">
+              Filtered: {selectedDecade}s
+            </span>
+          )}
+        </div>
         <form className="team-search" onSubmit={handleSearch}>
           <input
             className="team-search__input"
@@ -117,29 +155,81 @@ export default function TeamHistoryLine() {
             <TeamFlag team={selected} size={28} />
             <div>
               <h4 className="team-header__name">{data.team}</h4>
-              <p className="team-header__sub">{data.appearances} World Cups · {data.wc_titles} title{data.wc_titles !== 1 ? "s" : ""}</p>
+              <p className="team-header__sub">
+                {data.appearances} World Cups · {data.wc_titles} title{data.wc_titles !== 1 ? "s" : ""}
+                {selectedDecade && ` · showing ${selectedDecade}s`}
+              </p>
             </div>
           </div>
-          <TeamStats data={data} />
-          <ResponsiveContainer width="100%" height={220}>
-            <LineChart data={yearlyData} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-              <XAxis dataKey="year" tick={{ fill: "#94a3b8", fontSize: 11 }} axisLine={false} tickLine={false} />
-              <YAxis
-                domain={[0, 100]} tick={{ fill: "#94a3b8", fontSize: 11 }}
-                axisLine={false} tickLine={false}
-                tickFormatter={(v) => `${v}%`}
-              />
-              <Tooltip content={<CustomTooltip />} cursor={{ stroke: "#334155" }} />
-              <ReferenceLine y={50} stroke="#334155" strokeDasharray="4 4" />
-              <Line
-                type="monotone" dataKey="winRate"
-                stroke="#3b82f6" strokeWidth={2} dot={{ r: 4, fill: "#3b82f6" }}
-                activeDot={{ r: 6 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-          <p className="chart-legend-note">Win rate (%) per World Cup edition</p>
+
+          <TeamStats data={data} yearlyData={allYearlyData} selectedDecade={selectedDecade} />
+
+          {!hasDecadeData ? (
+            <p className="chart-legend-note" style={{ padding: "24px 0", textAlign: "center" }}>
+              {data.team} did not participate in the {selectedDecade}s
+            </p>
+          ) : (
+            <>
+              <ResponsiveContainer width="100%" height={220}>
+                <LineChart
+                  data={selectedDecade ? allYearlyData : allYearlyData}
+                  margin={{ top: 8, right: 16, left: 0, bottom: 0 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
+                  <XAxis
+                    dataKey="year"
+                    tick={{ fill: "#94a3b8", fontSize: 11 }}
+                    axisLine={false} tickLine={false}
+                  />
+                  <YAxis
+                    domain={[0, 100]}
+                    tick={{ fill: "#94a3b8", fontSize: 11 }}
+                    axisLine={false} tickLine={false}
+                    tickFormatter={(v) => `${v}%`}
+                  />
+                  <Tooltip content={<CustomTooltip />} cursor={{ stroke: "#334155" }} />
+                  <ReferenceLine y={50} stroke="#334155" strokeDasharray="4 4" />
+
+                  {/* Highlight the selected decade with a background band */}
+                  {selectedDecade && (
+                    <ReferenceArea
+                      x1={selectedDecade}
+                      x2={selectedDecade + 9}
+                      fill="#f59e0b"
+                      fillOpacity={0.08}
+                      stroke="#f59e0b"
+                      strokeOpacity={0.3}
+                    />
+                  )}
+
+                  {/* Full history dimmed when a decade is selected */}
+                  <Line
+                    type="monotone" dataKey="winRate"
+                    stroke={selectedDecade ? "#334155" : "#3b82f6"}
+                    strokeWidth={selectedDecade ? 1.5 : 2}
+                    strokeOpacity={selectedDecade ? 0.4 : 1}
+                    dot={selectedDecade ? false : { r: 4, fill: "#3b82f6" }}
+                  />
+
+                  {/* Overlay: bold line for the selected decade only */}
+                  {selectedDecade && visibleData.length > 0 && (
+                    <Line
+                      data={visibleData}
+                      type="monotone" dataKey="winRate"
+                      stroke="#f59e0b" strokeWidth={2.5}
+                      dot={{ r: 5, fill: "#f59e0b", stroke: "#0f172a", strokeWidth: 2 }}
+                      activeDot={{ r: 7 }}
+                      isAnimationActive={false}
+                    />
+                  )}
+                </LineChart>
+              </ResponsiveContainer>
+              <p className="chart-legend-note">
+                Win rate (%) per World Cup edition
+                {selectedDecade && ` — highlighted: ${selectedDecade}s`}
+              </p>
+            </>
+          )}
         </>
       )}
     </div>

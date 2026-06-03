@@ -9,7 +9,7 @@ const CustomTooltip = ({ active, payload, label }) => {
   const d = payload[0].payload;
   return (
     <div className="chart-tooltip">
-      <p className="chart-tooltip__title">{label}s</p>
+      <p className="chart-tooltip__title">{label}</p>
       <p>Total goals: <strong>{d.total_goals}</strong></p>
       <p>Matches: <strong>{d.matches}</strong></p>
       <p>Avg/match: <strong>{d.avg_per_match}</strong></p>
@@ -17,7 +17,7 @@ const CustomTooltip = ({ active, payload, label }) => {
   );
 };
 
-export default function GoalsByDecade() {
+export default function GoalsByDecade({ selectedDecade, onDecadeClick }) {
   const { data, isLoading, error } = useGoalsByDecade();
 
   if (isLoading) return <LoadingSpinner message="Loading goals data..." />;
@@ -26,14 +26,34 @@ export default function GoalsByDecade() {
   const rows = data.data.map((d) => ({ ...d, label: `${d.decade}s` }));
   const maxAvg = Math.max(...rows.map((r) => r.avg_per_match));
 
+  const barColor = (r) => {
+    if (selectedDecade === r.decade) return "#f59e0b";        // active filter → amber
+    if (selectedDecade !== null) return "#1e293b";            // dimmed when another is selected
+    return r.avg_per_match === maxAvg ? "#3b82f6" : "#334155"; // default: peak=blue, rest=slate
+  };
+
   return (
     <div className="chart-card">
       <div className="chart-card__header">
-        <h3 className="chart-card__title">Goals per Match by Decade</h3>
-        <p className="chart-card__sub">Average goals scored in 90 minutes across all World Cup editions</p>
+        <div className="chart-card__title-row">
+          <h3 className="chart-card__title">Goals per Match by Decade</h3>
+          {selectedDecade !== null && (
+            <button className="filter-badge" onClick={() => onDecadeClick(selectedDecade)}>
+              {selectedDecade}s ✕
+            </button>
+          )}
+        </div>
+        <p className="chart-card__sub">
+          Click a bar to filter the history chart by that decade — click again to clear
+        </p>
       </div>
       <ResponsiveContainer width="100%" height={280}>
-        <BarChart data={rows} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
+        <BarChart
+          data={rows}
+          margin={{ top: 8, right: 16, left: 0, bottom: 0 }}
+          onClick={(e) => e?.activePayload && onDecadeClick(e.activePayload[0].payload.decade)}
+          style={{ cursor: "pointer" }}
+        >
           <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
           <XAxis dataKey="label" tick={{ fill: "#94a3b8", fontSize: 12 }} axisLine={false} tickLine={false} />
           <YAxis
@@ -41,13 +61,10 @@ export default function GoalsByDecade() {
             axisLine={false} tickLine={false}
             domain={[0, "auto"]}
           />
-          <Tooltip content={<CustomTooltip />} cursor={{ fill: "#1e293b" }} />
+          <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(255,255,255,0.04)" }} />
           <Bar dataKey="avg_per_match" radius={[4, 4, 0, 0]}>
             {rows.map((r) => (
-              <Cell
-                key={r.decade}
-                fill={r.avg_per_match === maxAvg ? "#3b82f6" : "#334155"}
-              />
+              <Cell key={r.decade} fill={barColor(r)} />
             ))}
           </Bar>
         </BarChart>
