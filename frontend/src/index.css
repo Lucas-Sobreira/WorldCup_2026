@@ -55,86 +55,91 @@ a { color: var(--accent); }
 }
 
 /* ─── Bracket page layout ───────────────────────────────────── */
-.bracket-page { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+.bracket-page { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
 
 .bracket-header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 20px; background: var(--surface); border-bottom: 1px solid var(--border);
+  padding: 12px 20px; background: #040e1c; border-bottom: 1px solid #0f2135;
   flex-shrink: 0;
 }
-.bracket-header__title { font-size: 16px; font-weight: 700; }
+.bracket-header__left {}
+.bracket-header__title { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
 .bracket-header__champion {
-  display: flex; align-items: center; gap: 8px; margin-top: 4px;
+  display: flex; align-items: center; gap: 8px; margin-top: 5px;
   font-size: 13px; color: var(--text-muted);
 }
-.bracket-header__champion strong { color: var(--winner); font-size: 14px; }
+.bracket-header__champion strong { color: #c9a227; font-size: 14px; }
 
 .bracket-header__tabs { display: flex; gap: 8px; }
 .tab-btn {
-  padding: 6px 16px; border-radius: var(--radius);
-  border: 1px solid var(--border); color: var(--text-muted);
+  padding: 6px 18px; border-radius: 20px;
+  border: 1px solid #1d3454; color: var(--text-muted); font-size: 13px;
   transition: all 0.15s;
 }
-.tab-btn--active, .tab-btn:hover {
-  background: var(--accent); border-color: var(--accent); color: #fff;
+.tab-btn--active { background: #c9a227; border-color: #c9a227; color: #040e1c; font-weight: 700; }
+.tab-btn:not(.tab-btn--active):hover { border-color: #c9a22780; color: #c9a227; }
+
+.bracket-layout { display: flex; flex: 1; overflow: hidden; }
+
+.bk-tree-wrap { flex: 1; overflow: auto; padding: 20px 24px; background: #06111e; }
+.bk-tree {
+  display: flex; gap: 0; min-width: max-content;
+  position: relative; align-items: stretch;
 }
 
-.bracket-layout {
-  display: flex; flex: 1; overflow: hidden;
+/* ─── Bracket column ─────────────────────────────────────────── */
+.bk-col { display: flex; flex-direction: column; width: 204px; flex-shrink: 0; }
+.bk-col__label {
+  font-size: 10px; font-weight: 700; color: #c9a227;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  text-align: center; padding: 0 8px 12px; white-space: nowrap;
 }
-.bracket-tree {
-  display: flex; gap: 12px; padding: 16px 20px;
-  overflow-x: auto; flex: 1;
-}
-
-/* ─── Bracket column ────────────────────────────────────────── */
-.bracket-col { display: flex; flex-direction: column; min-width: 190px; }
-.bracket-col__title {
-  font-size: 11px; font-weight: 600; color: var(--text-muted);
-  text-transform: uppercase; letter-spacing: 0.08em;
-  margin-bottom: 10px; text-align: center;
-}
-.bracket-col__matches {
-  display: flex; flex-direction: column; gap: 8px; flex: 1;
-  justify-content: space-around;
+.bk-col__matches {
+  display: flex; flex-direction: column; flex: 1;
+  justify-content: space-around; gap: 6px; padding: 0 8px;
 }
 
-/* ─── Match card ────────────────────────────────────────────── */
-.match-card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 8px 10px;
-  cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s;
-  position: relative;
+/* ─── Match card (FIFA style) ────────────────────────────────── */
+.mc {
+  background: #0d1f35; border: 1px solid #1d3454;
+  border-radius: 6px; cursor: pointer; position: relative;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.12s;
+  overflow: hidden; min-width: 180px;
 }
-.match-card:hover { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
-.match-card--active { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
-.match-card--low-conf { opacity: 0.85; }
-.match-card--empty { min-height: 80px; background: transparent; border: none; }
+.mc:hover { border-color: #c9a22780; box-shadow: 0 4px 16px rgba(0,0,0,0.5); transform: translateY(-1px); }
+.mc--active { border-color: #c9a227; box-shadow: 0 0 0 2px #c9a22740; transform: translateY(-1px); }
+.mc--cold { opacity: 0.82; }
+.mc--empty { background: transparent; border: none; min-height: 70px; pointer-events: none; }
 
-.match-card__team {
-  display: flex; align-items: center; gap: 6px; padding: 3px 0;
+.mc__date {
+  font-size: 9px; font-weight: 700; color: #c9a227;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 5px 10px 4px; border-bottom: 1px solid #0f2135;
 }
-.match-card__name { flex: 1; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.match-card__prob { font-size: 11px; color: var(--text-muted); min-width: 30px; text-align: right; }
-.match-card__team--winner .match-card__name { color: var(--winner); font-weight: 600; }
-.match-card__team--winner .match-card__prob { color: var(--winner); }
-
-.match-card__badge {
-  position: absolute; top: 4px; right: 6px;
-  font-size: 9px; color: var(--yellow); opacity: 0.8;
+.mc__team {
+  display: flex; align-items: center; gap: 7px;
+  padding: 7px 10px; position: relative;
 }
-
-/* ─── Match card hover lift ─────────────────────────────────── */
-.match-card {
-  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+.mc__team:first-of-type { border-bottom: 1px solid #0f2135; }
+.mc__accent {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+  background: #c9a227; border-radius: 0 2px 2px 0;
 }
-.match-card:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.4), 0 0 0 1px var(--accent);
+.mc__name {
+  flex: 1; font-size: 12px; font-weight: 500;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.match-card--active {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.4), 0 0 0 2px var(--accent);
+.mc__pct { font-size: 11px; color: #3d5a7a; min-width: 30px; text-align: right; }
+.mc__team--winner .mc__name { color: #c9a227; font-weight: 700; }
+.mc__team--winner .mc__pct  { color: #c9a22799; }
+.mc__divider { padding: 0 10px 5px; }
+.mc__prob-bar { display: flex; height: 2px; border-radius: 1px; overflow: hidden; margin-top: 2px; }
+.mc__prob-home { background: #22c55e; }
+.mc__prob-draw { background: #eab308; }
+.mc__prob-away { background: #ef4444; }
+.mc__cold-badge {
+  position: absolute; bottom: 4px; right: 7px;
+  font-size: 9px; color: #eab308; opacity: 0.7;
 }
 
 /* ─── Win prob bar ──────────────────────────────────────────── */
@@ -438,7 +443,9 @@ a { color: var(--accent); }
   .bracket-header__tabs { align-self: flex-end; }
 
   .bracket-layout { flex-direction: column; overflow-x: hidden; }
-  .bracket-tree { padding: 12px; gap: 8px; overflow-x: auto; }
+  .bk-tree-wrap { padding: 12px; }
+  .bk-col { width: 172px; }
+  .bk-col__matches { padding: 0 4px; }
 
   .match-panel {
     position: fixed; bottom: 0; left: 0; right: 0;
@@ -459,9 +466,8 @@ a { color: var(--accent); }
 }
 
 @media (max-width: 375px) {
-  .bracket-col { min-width: 160px; }
-  .match-card { padding: 6px 8px; }
-  .match-card__name { font-size: 11px; }
+  .bk-col { width: 152px; }
+  .mc__name { font-size: 11px; }
   .team-stats-row { grid-template-columns: repeat(2, 1fr); }
   .conf-radars { grid-template-columns: 1fr; }
 }

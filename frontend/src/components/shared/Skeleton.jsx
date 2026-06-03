@@ -28,11 +28,11 @@ export function MatchCardSkeleton() {
 export function BracketSkeleton() {
   const colCounts = [16, 8, 4, 2, 1, 1];
   return (
-    <div className="bracket-tree">
+    <div style={{ display: "flex", gap: 0, padding: "20px 24px", background: "#06111e", flex: 1 }}>
       {colCounts.map((count, i) => (
-        <div key={i} className="bracket-col">
-          <Skeleton width={40} height={11} borderRadius={3} className="bracket-col__title-skel" />
-          <div className="bracket-col__matches">
+        <div key={i} className="bk-col">
+          <Skeleton width={60} height={10} borderRadius={3} style={{ margin: "0 auto 12px" }} />
+          <div className="bk-col__matches">
             {Array.from({ length: count }).map((_, j) => (
               <MatchCardSkeleton key={j} />
             ))}
