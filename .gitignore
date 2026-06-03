@@ -30,6 +30,11 @@ Thumbs.db
 # Claude Code internals
 .claude/
 
+# Playwright
+e2e/screenshots/
+test-results/
+playwright-report/
+
 # Env
 .env
 .env.local
