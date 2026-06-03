@@ -124,6 +124,19 @@ a { color: var(--accent); }
   font-size: 9px; color: var(--yellow); opacity: 0.8;
 }
 
+/* ─── Match card hover lift ─────────────────────────────────── */
+.match-card {
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+.match-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4), 0 0 0 1px var(--accent);
+}
+.match-card--active {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4), 0 0 0 2px var(--accent);
+}
+
 /* ─── Win prob bar ──────────────────────────────────────────── */
 .prob-bar { width: 100%; }
 .prob-bar__track {
@@ -387,6 +400,70 @@ a { color: var(--accent); }
 }
 .heatmap-legend span {
   display: inline-block; width: 12px; height: 12px; border-radius: 2px;
+}
+
+/* ─── Skeleton ───────────────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(90deg, #1e293b 25%, #273549 50%, #1e293b 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  display: block;
+}
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.bracket-col__title-skel { margin: 0 auto 10px; }
+.match-card--skeleton { pointer-events: none; }
+.match-card--skeleton .skeleton { margin: 2px 0; }
+
+.panel-skeleton { padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+
+/* ─── Responsive ─────────────────────────────────────────────── */
+/* Panel bottom-sheet animation (used in mobile media query) */
+@keyframes slideUp { from { transform: translateY(40px); opacity: 0; } }
+
+@media (max-width: 900px) {
+  .stats-grid { grid-template-columns: 1fr; }
+  .chart-card--wide { grid-column: 1; }
+  .conf-radars { grid-template-columns: repeat(2, 1fr); }
+  .team-stats-row { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .app-nav { padding: 0 12px; gap: 10px; }
+  .app-nav__brand { font-size: 13px; }
+
+  .bracket-header { flex-direction: column; align-items: flex-start; gap: 8px; padding: 10px 12px; }
+  .bracket-header__tabs { align-self: flex-end; }
+
+  .bracket-layout { flex-direction: column; overflow-x: hidden; }
+  .bracket-tree { padding: 12px; gap: 8px; overflow-x: auto; }
+
+  .match-panel {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    width: 100%; max-height: 70vh; border-left: none;
+    border-top: 1px solid var(--border); border-radius: 16px 16px 0 0;
+    animation: slideUp 0.25s ease-out;
+    z-index: 50;
+  }
+
+  .stats-page { padding: 12px; }
+  .conf-radars { grid-template-columns: repeat(2, 1fr); }
+  .team-stats-row { grid-template-columns: repeat(3, 1fr); }
+  .team-quick-select { gap: 4px; }
+  .quick-btn { font-size: 10px; padding: 3px 8px; }
+  .groups-grid { grid-template-columns: 1fr; padding: 12px; }
+  .heatmap-table { font-size: 10px; }
+  .heatmap-th--team, .heatmap-td--team { min-width: 110px; }
+}
+
+@media (max-width: 375px) {
+  .bracket-col { min-width: 160px; }
+  .match-card { padding: 6px 8px; }
+  .match-card__name { font-size: 11px; }
+  .team-stats-row { grid-template-columns: repeat(2, 1fr); }
+  .conf-radars { grid-template-columns: 1fr; }
 }
 
 /* ─── Scrollbar ─────────────────────────────────────────────── */

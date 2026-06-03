@@ -1,5 +1,5 @@
 import { useMatch } from "../../hooks";
-import LoadingSpinner from "../shared/LoadingSpinner";
+import { PanelSkeleton } from "../shared/Skeleton";
 import TeamFlag from "../shared/TeamFlag";
 import WinProbBar from "../bracket/WinProbBar";
 
@@ -90,7 +90,7 @@ export default function MatchPanel({ match, onClose }) {
       <div className="match-panel__round">{match.round}</div>
 
       {isLoading ? (
-        <LoadingSpinner message="Loading match details..." />
+        <PanelSkeleton />
       ) : data ? (
         <>
           <section className="panel-section">

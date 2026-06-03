@@ -5,7 +5,7 @@ import {
 } from "recharts";
 import { useTeamHistory } from "../../hooks";
 import TeamFlag from "../shared/TeamFlag";
-import LoadingSpinner from "../shared/LoadingSpinner";
+import { ChartSkeleton } from "../shared/Skeleton";
 
 const POPULAR_TEAMS = [
   "Brazil", "Germany", "France", "Argentina", "Spain",
@@ -159,7 +159,7 @@ export default function TeamHistoryLine({ selectedDecades }) {
         ))}
       </div>
 
-      {isLoading && <LoadingSpinner message={`Loading ${selected} history...`} />}
+      {isLoading && <ChartSkeleton height={220} />}
       {error   && <div className="chart-error">Team not found: "{selected}"</div>}
 
       {data && (

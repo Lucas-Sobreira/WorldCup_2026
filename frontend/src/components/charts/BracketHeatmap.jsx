@@ -1,5 +1,5 @@
 import { useBracket } from "../../hooks";
-import LoadingSpinner from "../shared/LoadingSpinner";
+import { ChartSkeleton } from "../shared/Skeleton";
 import TeamFlag from "../shared/TeamFlag";
 
 const ROUNDS = ["R32", "R16", "QF", "SF", "Final"];
@@ -54,7 +54,7 @@ function buildHeatmap(bracket) {
 export default function BracketHeatmap() {
   const { data, isLoading, error } = useBracket();
 
-  if (isLoading) return <LoadingSpinner message="Loading bracket data..." />;
+  if (isLoading) return <ChartSkeleton height={400} />;
   if (error) return <div className="chart-error">Failed to load bracket</div>;
 
   const { sorted, map } = buildHeatmap(data);

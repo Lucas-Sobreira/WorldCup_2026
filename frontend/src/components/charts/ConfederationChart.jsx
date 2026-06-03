@@ -3,7 +3,7 @@ import {
   ResponsiveContainer, Tooltip, Legend,
 } from "recharts";
 import { useConfederation } from "../../hooks";
-import LoadingSpinner from "../shared/LoadingSpinner";
+import { ChartSkeleton } from "../shared/Skeleton";
 
 const COLORS = {
   UEFA: "#3b82f6",
@@ -30,7 +30,7 @@ const CustomTooltip = ({ active, payload }) => {
 export default function ConfederationChart() {
   const { data, isLoading, error } = useConfederation();
 
-  if (isLoading) return <LoadingSpinner message="Loading confederation data..." />;
+  if (isLoading) return <ChartSkeleton height={320} />;
   if (error) return <div className="chart-error">Failed to load data</div>;
 
   // Normalize for radar: invert rank (lower rank = better), normalize 0-100

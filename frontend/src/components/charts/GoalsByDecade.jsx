@@ -2,7 +2,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
 } from "recharts";
 import { useGoalsByDecade } from "../../hooks";
-import LoadingSpinner from "../shared/LoadingSpinner";
+import { ChartSkeleton } from "../shared/Skeleton";
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
@@ -20,7 +20,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 export default function GoalsByDecade({ selectedDecades, onDecadeClick }) {
   const { data, isLoading, error } = useGoalsByDecade();
 
-  if (isLoading) return <LoadingSpinner message="Loading goals data..." />;
+  if (isLoading) return <ChartSkeleton height={280} />;
   if (error) return <div className="chart-error">Failed to load data</div>;
 
   const rows = data.data.map((d) => ({ ...d, label: `${d.decade}s` }));

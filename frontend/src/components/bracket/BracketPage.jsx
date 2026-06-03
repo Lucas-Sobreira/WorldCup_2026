@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useBracket } from "../../hooks";
-import LoadingSpinner from "../shared/LoadingSpinner";
+import { BracketSkeleton } from "../shared/Skeleton";
 import BracketColumn from "./BracketColumn";
 import MatchPanel from "../panel/MatchPanel";
 import TeamFlag from "../shared/TeamFlag";
@@ -55,7 +55,13 @@ export default function BracketPage() {
   const [view, setView] = useState("bracket"); // "bracket" | "groups"
 
   if (isLoading) {
-    return <LoadingSpinner message="Simulating 63 matches... this may take ~20s on first load." />;
+    return (
+      <div className="bracket-page">
+        <div className="bracket-layout">
+          <BracketSkeleton />
+        </div>
+      </div>
+    );
   }
   if (error) {
     return (
