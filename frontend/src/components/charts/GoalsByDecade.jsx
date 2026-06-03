@@ -17,7 +17,7 @@ const CustomTooltip = ({ active, payload, label }) => {
   );
 };
 
-export default function GoalsByDecade({ selectedDecade, onDecadeClick }) {
+export default function GoalsByDecade({ selectedDecades, onDecadeClick }) {
   const { data, isLoading, error } = useGoalsByDecade();
 
   if (isLoading) return <LoadingSpinner message="Loading goals data..." />;
@@ -25,26 +25,43 @@ export default function GoalsByDecade({ selectedDecade, onDecadeClick }) {
 
   const rows = data.data.map((d) => ({ ...d, label: `${d.decade}s` }));
   const maxAvg = Math.max(...rows.map((r) => r.avg_per_match));
+  const hasSelection = selectedDecades.length > 0;
+
+  // Range fills: bars between two selected anchors get a lighter amber tint
+  const [lo, hi] = selectedDecades.length === 2
+    ? [selectedDecades[0], selectedDecades[1]]
+    : [null, null];
 
   const barColor = (r) => {
-    if (selectedDecade === r.decade) return "#f59e0b";        // active filter → amber
-    if (selectedDecade !== null) return "#1e293b";            // dimmed when another is selected
-    return r.avg_per_match === maxAvg ? "#3b82f6" : "#334155"; // default: peak=blue, rest=slate
+    if (selectedDecades.includes(r.decade)) return "#f59e0b";       // anchor → amber
+    if (lo !== null && r.decade > lo && r.decade < hi) return "#92400e"; // in range → dark amber
+    if (hasSelection) return "#1e293b";                               // out of range → dimmed
+    return r.avg_per_match === maxAvg ? "#3b82f6" : "#334155";        // default
   };
+
+  const rangeLabel = selectedDecades.length === 2
+    ? `${selectedDecades[0]}s – ${selectedDecades[1]}s`
+    : selectedDecades.length === 1
+    ? `${selectedDecades[0]}s`
+    : null;
 
   return (
     <div className="chart-card">
       <div className="chart-card__header">
         <div className="chart-card__title-row">
           <h3 className="chart-card__title">Goals per Match by Decade</h3>
-          {selectedDecade !== null && (
-            <button className="filter-badge" onClick={() => onDecadeClick(selectedDecade)}>
-              {selectedDecade}s ✕
+          {rangeLabel && (
+            <button className="filter-badge" onClick={() => selectedDecades.forEach(onDecadeClick)}>
+              {rangeLabel} ✕
             </button>
           )}
         </div>
         <p className="chart-card__sub">
-          Click a bar to filter the history chart by that decade — click again to clear
+          {hasSelection
+            ? selectedDecades.length === 1
+              ? "Click a second bar to set a range — or the same bar to clear"
+              : "Click any bar to reset the range"
+            : "Click a bar to anchor a range — click a second bar to zoom"}
         </p>
       </div>
       <ResponsiveContainer width="100%" height={280}>
@@ -60,7 +77,7 @@ export default function GoalsByDecade({ selectedDecade, onDecadeClick }) {
           <Bar
             dataKey="avg_per_match"
             radius={[4, 4, 0, 0]}
-            onClick={(data) => onDecadeClick(data.decade)}
+            onClick={(d) => onDecadeClick(d.decade)}
             style={{ cursor: "pointer" }}
           >
             {rows.map((r) => (

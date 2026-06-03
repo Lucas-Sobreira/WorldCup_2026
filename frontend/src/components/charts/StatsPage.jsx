@@ -5,17 +5,29 @@ import TeamHistoryLine from "./TeamHistoryLine";
 import BracketHeatmap from "./BracketHeatmap";
 
 export default function StatsPage() {
-  // null = all decades; number = e.g. 1990 means 1990–1999
-  const [selectedDecade, setSelectedDecade] = useState(null);
+  // Up to 2 selected decades; the range between them drives the zoom
+  const [selectedDecades, setSelectedDecades] = useState([]);
 
-  const handleDecadeClick = (decade) =>
-    setSelectedDecade((prev) => (prev === decade ? null : decade));
+  const handleDecadeClick = (decade) => {
+    setSelectedDecades((prev) => {
+      if (prev.includes(decade)) {
+        // deselect
+        return prev.filter((d) => d !== decade);
+      }
+      if (prev.length < 2) {
+        // add second anchor
+        return [...prev, decade].sort((a, b) => a - b);
+      }
+      // already 2 selected — reset to just the new one
+      return [decade];
+    });
+  };
 
   return (
     <div className="stats-page">
       <div className="stats-grid">
-        <GoalsByDecade selectedDecade={selectedDecade} onDecadeClick={handleDecadeClick} />
-        <TeamHistoryLine selectedDecade={selectedDecade} />
+        <GoalsByDecade selectedDecades={selectedDecades} onDecadeClick={handleDecadeClick} />
+        <TeamHistoryLine selectedDecades={selectedDecades} />
         <ConfederationChart />
         <BracketHeatmap />
       </div>
