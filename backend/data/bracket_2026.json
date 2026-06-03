@@ -1,0 +1,68 @@
+{
+  "edition": 2026,
+  "hosts": ["Canada", "Mexico", "United States"],
+  "format": {
+    "group_stage_teams": 48,
+    "groups": 12,
+    "group_size": 4,
+    "qualify_per_group": 2,
+    "best_third_places": 8,
+    "round_of_32_teams": 32
+  },
+  "groups": {
+    "A": {
+      "teams": ["Mexico", "South Africa", "South Korea", "Czechia"]
+    },
+    "B": {
+      "teams": ["Canada", "Bosnia-Herzegovina", "Qatar", "Switzerland"]
+    },
+    "C": {
+      "teams": ["Brazil", "Morocco", "Haiti", "Scotland"]
+    },
+    "D": {
+      "teams": ["United States", "Paraguay", "Australia", "Türkiye"]
+    },
+    "E": {
+      "teams": ["Germany", "Curacao", "Ivory Coast", "Ecuador"]
+    },
+    "F": {
+      "teams": ["Netherlands", "Japan", "Sweden", "Tunisia"]
+    },
+    "G": {
+      "teams": ["Belgium", "Egypt", "Iran", "New Zealand"]
+    },
+    "H": {
+      "teams": ["Spain", "Cape Verde", "Saudi Arabia", "Uruguay"]
+    },
+    "I": {
+      "teams": ["France", "Senegal", "Iraq", "Norway"]
+    },
+    "J": {
+      "teams": ["Argentina", "Algeria", "Austria", "Jordan"]
+    },
+    "K": {
+      "teams": ["Portugal", "DR Congo", "Uzbekistan", "Colombia"]
+    },
+    "L": {
+      "teams": ["England", "Croatia", "Ghana", "Panama"]
+    }
+  },
+  "round_of_32_slots": [
+    {"id": "R32_01", "team_a": "1A", "team_b": "2C"},
+    {"id": "R32_02", "team_a": "1B", "team_b": "2A"},
+    {"id": "R32_03", "team_a": "1C", "team_b": "2B"},
+    {"id": "R32_04", "team_a": "1D", "team_b": "2F"},
+    {"id": "R32_05", "team_a": "1E", "team_b": "2D"},
+    {"id": "R32_06", "team_a": "1F", "team_b": "2E"},
+    {"id": "R32_07", "team_a": "1G", "team_b": "2I"},
+    {"id": "R32_08", "team_a": "1H", "team_b": "2G"},
+    {"id": "R32_09", "team_a": "1I", "team_b": "2H"},
+    {"id": "R32_10", "team_a": "1J", "team_b": "2L"},
+    {"id": "R32_11", "team_a": "1K", "team_b": "2J"},
+    {"id": "R32_12", "team_a": "1L", "team_b": "2K"},
+    {"id": "R32_13", "team_a": "3rd_ABCD", "team_b": "3rd_EFGH"},
+    {"id": "R32_14", "team_a": "3rd_IJKL", "team_b": "3rd_ABEF"},
+    {"id": "R32_15", "team_a": "3rd_CDGH", "team_b": "3rd_IJAB"},
+    {"id": "R32_16", "team_a": "3rd_EKLJ", "team_b": "3rd_FLCD"}
+  ]
+}
