@@ -24,3 +24,12 @@ python <script>.py
 ```
 
 Use the `data-analyst` and `data-scientist` skills for analysis and modeling tasks.
+
+## Github
+
+- Main branch: `main`
+- Feature branches: `feature/<description>`
+- Pull requests: Open PRs for code review before merging to main.
+- Issues: Use Issues to track bugs, tasks, and feature requests.
+- README.md: Include setup instructions, project overview, and usage guidelines.
+- .gitignore: Ignore `__pycache__/`, `.env`, and any large data files.
