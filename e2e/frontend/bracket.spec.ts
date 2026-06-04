@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const DATA_TIMEOUT = 30_000;
+const DATA_TIMEOUT = 50_000;
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/');

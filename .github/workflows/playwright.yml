@@ -30,17 +30,18 @@ jobs:
         run: pip install -r backend/requirements.txt
 
       - name: Start backend
-        run: uvicorn backend.main:app --port 8000 &
-        env:
-          PYTHONPATH: ${{ github.workspace }}
+        # Mirror render.yaml: rootDir=backend, command=uvicorn main:app
+        run: cd backend && uvicorn main:app --port 8000 &
 
       - name: Wait for backend to be ready
         run: |
-          for i in $(seq 1 30); do
-            curl -sf http://localhost:8000/health && echo "Backend ready" && break
-            echo "Waiting for backend... ($i)"
+          for i in $(seq 1 40); do
+            curl -sf http://localhost:8000/health && echo "Backend ready after ${i} attempts" && exit 0
+            echo "Waiting for backend... ($i/40)"
             sleep 3
           done
+          echo "ERROR: Backend failed to start within 120s"
+          exit 1
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
