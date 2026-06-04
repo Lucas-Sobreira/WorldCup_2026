@@ -24,37 +24,37 @@
     "L": { "teams": ["England", "Croatia", "Ghana", "Panama"] }
   },
   "round_of_32_slots": [
-    {"id": "R32_01", "team_a": "2A",      "team_b": "2B",         "pool": null},
-    {"id": "R32_02", "team_a": "1E",      "team_b": "3rd",        "pool": "ABCDF"},
-    {"id": "R32_03", "team_a": "1F",      "team_b": "2C",         "pool": null},
-    {"id": "R32_04", "team_a": "1C",      "team_b": "2F",         "pool": null},
-    {"id": "R32_05", "team_a": "1I",      "team_b": "3rd",        "pool": "CDFGH"},
-    {"id": "R32_06", "team_a": "2E",      "team_b": "2I",         "pool": null},
-    {"id": "R32_07", "team_a": "1A",      "team_b": "3rd",        "pool": "CEFHI"},
-    {"id": "R32_08", "team_a": "1L",      "team_b": "3rd",        "pool": "EHIJK"},
-    {"id": "R32_09", "team_a": "1D",      "team_b": "3rd",        "pool": "BEFIJ"},
-    {"id": "R32_10", "team_a": "1G",      "team_b": "3rd",        "pool": "AEHIJ"},
-    {"id": "R32_11", "team_a": "2K",      "team_b": "2L",         "pool": null},
-    {"id": "R32_12", "team_a": "1H",      "team_b": "2J",         "pool": null},
-    {"id": "R32_13", "team_a": "1B",      "team_b": "3rd",        "pool": "EFGIJ"},
-    {"id": "R32_14", "team_a": "1J",      "team_b": "2H",         "pool": null},
-    {"id": "R32_15", "team_a": "1K",      "team_b": "3rd",        "pool": "DEIJL"},
-    {"id": "R32_16", "team_a": "2D",      "team_b": "2G",         "pool": null}
+    {"id": "R32_02", "team_a": "1E",  "team_b": "3rd", "pool": "ABCDF"},
+    {"id": "R32_05", "team_a": "1I",  "team_b": "3rd", "pool": "CDFGH"},
+    {"id": "R32_01", "team_a": "2A",  "team_b": "2B",  "pool": null},
+    {"id": "R32_03", "team_a": "1F",  "team_b": "2C",  "pool": null},
+    {"id": "R32_11", "team_a": "2K",  "team_b": "2L",  "pool": null},
+    {"id": "R32_12", "team_a": "1H",  "team_b": "2J",  "pool": null},
+    {"id": "R32_09", "team_a": "1D",  "team_b": "3rd", "pool": "BEFIJ"},
+    {"id": "R32_10", "team_a": "1G",  "team_b": "3rd", "pool": "AEHIJ"},
+    {"id": "R32_04", "team_a": "1C",  "team_b": "2F",  "pool": null},
+    {"id": "R32_06", "team_a": "2E",  "team_b": "2I",  "pool": null},
+    {"id": "R32_07", "team_a": "1A",  "team_b": "3rd", "pool": "CEFHI"},
+    {"id": "R32_08", "team_a": "1L",  "team_b": "3rd", "pool": "EHIJK"},
+    {"id": "R32_14", "team_a": "1J",  "team_b": "2H",  "pool": null},
+    {"id": "R32_16", "team_a": "2D",  "team_b": "2G",  "pool": null},
+    {"id": "R32_13", "team_a": "1B",  "team_b": "3rd", "pool": "EFGIJ"},
+    {"id": "R32_15", "team_a": "1K",  "team_b": "3rd", "pool": "DEIJL"}
   ],
   "r16_pairs": [
     ["R32_02", "R32_05"],
     ["R32_01", "R32_03"],
-    ["R32_04", "R32_06"],
-    ["R32_07", "R32_08"],
     ["R32_11", "R32_12"],
     ["R32_09", "R32_10"],
+    ["R32_04", "R32_06"],
+    ["R32_07", "R32_08"],
     ["R32_14", "R32_16"],
     ["R32_13", "R32_15"]
   ],
   "qf_pairs": [
-    ["R16_01", "R16_04"],
-    ["R16_02", "R16_03"],
-    ["R16_05", "R16_08"],
-    ["R16_06", "R16_07"]
+    ["R16_01", "R16_02"],
+    ["R16_03", "R16_04"],
+    ["R16_05", "R16_06"],
+    ["R16_07", "R16_08"]
   ]
 }
