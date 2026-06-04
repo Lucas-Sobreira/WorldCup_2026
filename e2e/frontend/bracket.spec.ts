@@ -1,10 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-// Requires the React dev server to be running: npm run dev (inside frontend/)
-const BASE_URL = 'http://localhost:5173';
-
 test.beforeEach(async ({ page }) => {
-  await page.goto(BASE_URL);
+  await page.goto('/', { waitUntil: 'networkidle' });
 });
 
 test('bracket renders 12 groups', async ({ page }) => {
