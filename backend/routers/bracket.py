@@ -22,25 +22,6 @@ router = APIRouter(prefix="/bracket", tags=["bracket"])
 
 _BRACKET_JSON = Path(__file__).parent.parent / "data" / "bracket_2026.json"
 
-# R16 pairings: (winner_of_r32_a, winner_of_r32_b)
-_R16_PAIRS = [
-    ("R32_01", "R32_02"),
-    ("R32_03", "R32_04"),
-    ("R32_05", "R32_06"),
-    ("R32_07", "R32_08"),
-    ("R32_09", "R32_10"),
-    ("R32_11", "R32_12"),
-    ("R32_13", "R32_14"),
-    ("R32_15", "R32_16"),
-]
-
-_QF_PAIRS = [
-    ("R16_01", "R16_02"),
-    ("R16_03", "R16_04"),
-    ("R16_05", "R16_06"),
-    ("R16_07", "R16_08"),
-]
-
 _SF_PAIRS = [
     ("QF_01", "QF_02"),
     ("QF_03", "QF_04"),
@@ -157,22 +138,51 @@ def _simulate_knockout(match_id: str, round_name: str, home: str, away: str) -> 
     )
 
 
-def _pick_third_places(groups: dict[str, GroupData]) -> list[dict[str, Any]]:
-    """Rank all 12 third-place teams; return top 8 sorted by performance."""
-    thirds = []
+def _assign_third_places(
+    groups: dict[str, GroupData],
+    r32_slots: list[dict],
+) -> dict[str, str]:
+    """
+    Rank all 12 third-place teams and assign top 8 to the 8 R32 third-place slots.
+    Each slot defines a pool of eligible groups; greedy assignment by rank.
+    """
+    all_thirds = []
     for gid, gdata in groups.items():
         ts = next(t for t in gdata.standings if t.position == 3)
-        thirds.append(
-            {
-                "group": gid,
-                "team": ts.team,
-                "points": ts.points,
-                "goal_diff": ts.goal_diff,
-                "goals_for": ts.goals_for,
-            }
-        )
-    thirds.sort(key=lambda x: (-x["points"], -x["goal_diff"], -x["goals_for"]))
-    return thirds[:8]
+        all_thirds.append({
+            "group": gid,
+            "team": ts.team,
+            "points": ts.points,
+            "goal_diff": ts.goal_diff,
+            "goals_for": ts.goals_for,
+        })
+    all_thirds.sort(key=lambda x: (-x["points"], -x["goal_diff"], -x["goals_for"]))
+
+    # Slots that need a 3rd-place team, with their eligible group pools
+    third_slots = [
+        (s["id"], set(s["pool"]))
+        for s in r32_slots
+        if s.get("pool")
+    ]
+
+    assigned: dict[str, str] = {}
+    used: set[str] = set()
+
+    for sid, pool in third_slots:
+        for entry in all_thirds:
+            if entry["team"] not in used and entry["group"] in pool:
+                assigned[sid] = entry["team"]
+                used.add(entry["team"])
+                break
+        else:
+            # Fallback: best remaining (shouldn't happen with correct pools)
+            for entry in all_thirds:
+                if entry["team"] not in used:
+                    assigned[sid] = entry["team"]
+                    used.add(entry["team"])
+                    break
+
+    return assigned
 
 
 @lru_cache(maxsize=1)
@@ -181,30 +191,24 @@ def _simulate_full_bracket() -> BracketResponse:
     edition = data["edition"]
     group_cfg: dict[str, list[str]] = {g: v["teams"] for g, v in data["groups"].items()}
     r32_slots: list[dict] = data["round_of_32_slots"]
+    r16_pairs: list[list[str]] = data["r16_pairs"]
+    qf_pairs: list[list[str]] = data["qf_pairs"]
 
     # --- Group stage ---
     groups: dict[str, GroupData] = {}
     for gid, teams in group_cfg.items():
         groups[gid] = _simulate_group(gid, teams)
 
-    # --- Resolve 3rd-place teams ---
-    top_thirds = _pick_third_places(groups)
-    # Assign to the 4 third-place R32 slots (pairs by ranking)
-    third_slot_map: dict[str, str] = {}
-    slot_keys = ["3rd_ABCD", "3rd_EFGH", "3rd_IJKL", "3rd_ABEF", "3rd_CDGH", "3rd_IJAB", "3rd_EKLJ", "3rd_FLCD"]
-    for i, entry in enumerate(top_thirds):
-        third_slot_map[slot_keys[i]] = entry["team"]
+    # --- Assign 3rd-place teams to correct R32 slots ---
+    third_slot_map = _assign_third_places(groups, r32_slots)
 
     # --- Build R32 team lookup ---
-    def _resolve_slot(slot: str) -> str:
-        """Convert e.g. '1A' or '2C' or '3rd_ABCD' to a team name."""
-        if slot.startswith("3rd_"):
-            return third_slot_map.get(slot, "TBD")
-        pos_label = slot[0]  # '1' or '2'
-        group_id = slot[1]   # 'A'..'L'
-        gdata = groups[group_id]
-        pos = int(pos_label)
-        team = next((t.team for t in gdata.standings if t.position == pos), "TBD")
+    def _resolve_slot(slot_str: str, r32_slot_id: str) -> str:
+        if slot_str == "3rd":
+            return third_slot_map.get(r32_slot_id, "TBD")
+        pos = int(slot_str[0])   # 1 or 2
+        gid = slot_str[1]        # A..L
+        team = next((t.team for t in groups[gid].standings if t.position == pos), "TBD")
         return team
 
     # --- Round of 32 ---
@@ -212,16 +216,16 @@ def _simulate_full_bracket() -> BracketResponse:
     r32_winners: dict[str, str] = {}
     for slot in r32_slots:
         sid = slot["id"]
-        home = _resolve_slot(slot["team_a"])
-        away = _resolve_slot(slot["team_b"])
+        home = _resolve_slot(slot["team_a"], sid)
+        away = _resolve_slot(slot["team_b"], sid)
         km = _simulate_knockout(sid, "Round of 32", home, away)
         r32_matches.append(km)
         r32_winners[sid] = km.predicted_winner
 
-    # --- Round of 16 ---
+    # --- Round of 16 (official bracket tree from bracket_2026.json) ---
     r16_matches: list[KnockoutMatch] = []
     r16_winners: dict[str, str] = {}
-    for i, (a_id, b_id) in enumerate(_R16_PAIRS):
+    for i, (a_id, b_id) in enumerate(r16_pairs):
         match_id = f"R16_{i+1:02d}"
         home = r32_winners[a_id]
         away = r32_winners[b_id]
@@ -229,10 +233,10 @@ def _simulate_full_bracket() -> BracketResponse:
         r16_matches.append(km)
         r16_winners[match_id] = km.predicted_winner
 
-    # --- Quarter-finals ---
+    # --- Quarter-finals (cross-bracket pairs from bracket_2026.json) ---
     qf_matches: list[KnockoutMatch] = []
     qf_winners: dict[str, str] = {}
-    for i, (a_id, b_id) in enumerate(_QF_PAIRS):
+    for i, (a_id, b_id) in enumerate(qf_pairs):
         match_id = f"QF_{i+1:02d}"
         home = r16_winners[a_id]
         away = r16_winners[b_id]

@@ -78,8 +78,6 @@ def build_training_data(
 
 
 def _build_pipeline() -> Pipeline:
-    # XGBoost: best accuracy/log-loss balance (56.2% acc, log-loss 0.985).
-    # RandomForest reaches 57.8% but log-loss degrades to 1.52 (poor prob calibration).
     xgb = XGBClassifier(
         n_estimators=300,
         learning_rate=0.05,
