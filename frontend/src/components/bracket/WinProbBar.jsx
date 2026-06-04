@@ -4,7 +4,7 @@ export default function WinProbBar({ homeProb, drawProb, awayProb, compact = fal
   const ap = Math.round(awayProb * 100);
 
   return (
-    <div className={`prob-bar ${compact ? "prob-bar--compact" : ""}`}>
+    <div className={`prob-bar ${compact ? "prob-bar--compact" : ""}`} data-testid="win-probability">
       <div className="prob-bar__track">
         <div className="prob-bar__home" style={{ width: `${hp}%` }} title={`Home ${hp}%`} />
         <div className="prob-bar__draw" style={{ width: `${dp}%` }} title={`Draw ${dp}%`} />

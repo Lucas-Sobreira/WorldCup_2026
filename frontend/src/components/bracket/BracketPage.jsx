@@ -27,7 +27,7 @@ function GroupsView({ groups }) {
   return (
     <div className="groups-grid">
       {Object.entries(groups).map(([gid, gdata]) => (
-        <div key={gid} className="group-card">
+        <div key={gid} className="group-card" data-testid="group">
           <h3 className="group-card__title">Grupo {gid}</h3>
           <table className="group-table">
             <thead>
@@ -35,7 +35,7 @@ function GroupsView({ groups }) {
             </thead>
             <tbody>
               {gdata.standings.map((s) => (
-                <tr key={s.team} className={s.position <= 2 ? "group-table__row--qualify" : ""}>
+                <tr key={s.team} data-testid="team" className={s.position <= 2 ? "group-table__row--qualify" : ""}>
                   <td>{s.position}</td>
                   <td className="group-table__team">
                     <TeamFlag team={s.team} size={14} />

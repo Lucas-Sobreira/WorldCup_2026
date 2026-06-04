@@ -75,7 +75,7 @@ export default function MatchPanel({ match, onClose }) {
   const { data, isLoading } = useMatch(home, away);
 
   return (
-    <aside className="match-panel">
+    <aside className="match-panel" data-testid="prediction-modal">
       <div className="match-panel__header">
         <div className="match-panel__teams">
           <TeamFlag team={home} size={24} />

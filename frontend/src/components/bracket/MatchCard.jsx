@@ -32,6 +32,7 @@ export default function MatchCard({ match, onClick, isActive }) {
       onClick={() => onClick?.(match)}
       role="button"
       tabIndex={0}
+      data-testid="match"
       data-match-id={match.id}
       onKeyDown={(e) => e.key === "Enter" && onClick?.(match)}
     >
